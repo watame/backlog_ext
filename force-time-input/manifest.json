@@ -1,0 +1,16 @@
+{
+  "name": "backlog-force-time-input",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "description": "BackLogの作業時間入力を強制する拡張",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.backlog.com/view/*/*"
+      ],
+      "js": [
+        "force-time-input.js"
+      ]
+    }
+  ]
+}

@@ -3,6 +3,9 @@ const allowTimeBlankStatus = ["未対応"];
 
 // 保存ボタンなどを取得
 const saveButtons = document.querySelectorAll('.button--primary.-w-fixed-small');
+// NodeListはmapを利用できないので、配列に変換して対応する
+// see: https://blog.sushi.money/entry/2017/04/19/114028
+const saveButtonsText = Array.from(saveButtons).map(button => button.textContent);
 // チケットステータスの名称が記載されている要素を取得
 const ticketStatus = statusElem.querySelector(".status-chosen-wrapper .chzn-container .chzn-single .chzn--item .chzn--icon-text");
 // TODO: 作業実績時間の取得
@@ -20,9 +23,10 @@ function allowedTimeBlank() {
 //MutationObserver（インスタンス）の作成
 const mo = new MutationObserver(() => {
   const allowBlank = allowTimeBlankStatus();
-  for (button in saveButtons) {
+  saveButtons.forEach((button, index) => {
     button.disable = allowBlank;
-  }
+    button.textContent = allowBlank ? saveButtonsText[index] : "実績時間を入力してください";
+  });
 });
 
 //監視する「もの」の指定（必ず1つ以上trueにする）

@@ -7,26 +7,30 @@ const saveButtons = document.querySelectorAll('.button--primary.-w-fixed-small')
 // see: https://blog.sushi.money/entry/2017/04/19/114028
 const saveButtonsText = Array.from(saveButtons).map(button => button.textContent);
 // チケットステータスの名称が記載されている要素を取得
-const ticketStatus = statusElem.querySelector(".status-chosen-wrapper .chzn-container .chzn-single .chzn--item .chzn--icon-text");
-// TODO: 作業実績時間の取得
-
+const ticketStatus = document.querySelector(".status-chosen-wrapper .chzn-container .chzn-single .chzn--item .chzn--icon-text");
+// 作業実績時間の取得
+const actualHours = document.querySelector(".-actual-hours .ticket__properties-value .form-element .numeric");
 
 // 時間未入力が許可されているステータスかをチェックする
 function allowedTimeBlank() {
   return ticketStatus.textContent in allowTimeBlankStatus
 }
 
-// TODO: 起動時読み込み用の関数の設定
+// 作業時間が未入力ではないかチェック
+function preventBlankTime() {
+  // 空文字,0は自動的にfalseになるので反転させて条件とする
+  const allowBlank = allowedTimeBlank() && !actualHours.value;
+  saveButtons.forEach((button, index) => {
+    button.disable = allowBlank;
+    button.textContent = allowBlank ? saveButtonsText[index] : "実績時間を入力してください";
+  });
+}
 
 // div要素の監視を行うための設定を実施
 // see: https://at.sachi-web.com/blog-entry-1516.html
 //MutationObserver（インスタンス）の作成
 const mo = new MutationObserver(() => {
-  const allowBlank = allowTimeBlankStatus();
-  saveButtons.forEach((button, index) => {
-    button.disable = allowBlank;
-    button.textContent = allowBlank ? saveButtonsText[index] : "実績時間を入力してください";
-  });
+  preventBlankTime();
 });
 
 //監視する「もの」の指定（必ず1つ以上trueにする）
@@ -38,3 +42,7 @@ var config = {
 
 //監視の開始
 mo.observe(ticketStatus, config);
+actualHours.addEventListener("change", () => { preventBlankTime; });
+
+// 関数の初回実行
+preventBlankTime();
